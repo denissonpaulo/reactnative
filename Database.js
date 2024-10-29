@@ -12,6 +12,27 @@ async function saveItem(listItem){
     return AsyncStorage.setItem('items', JSON.stringify(savedItems));
 }
 
+
+function getItems(){
+    return AsyncStorage.getItem('items')
+            .then(response => {
+                if(response)
+                    return Promise.resolve(JSON.parse(response));
+                else
+                    return Promise.resolve([]);
+            })
+}
+
+
+async function getItem(id){
+    const savedItems = await getItems();
+    return savedItems.find(item => item.id === id);
+}
+
+
+
 module.exports = {
-    saveItem
+    saveItem,
+    getItems,
+    getItem
 }
