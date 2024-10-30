@@ -1,6 +1,7 @@
 
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { Feather as Icon } from '@expo/vector-icons';
 import Database from './Database';
 
 export default function AppItem(props){
@@ -12,38 +13,55 @@ export default function AppItem(props){
     }
 
     function handleDeletePress(){ 
-        Alert.alert(
-            "Atenção",
-            "Você tem certeza que deseja excluir este item?",
-            [
-                {
-                    text: "Não",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                },
-                { 
-                    text: "Sim", onPress: () => {
-                        Database.deleteItem(props.id)
-                            .then(response => props.navigation.navigate("AppList", { id: props.id }));
-                    }
-                }
-            ],
-            { cancelable: false }
-            );
+
+        const userAgent = navigator.userAgent;
+        const iOS = !!userAgent.match(/iPhone|iPad|iPod/);
+        const isAndroid = /android/i.test(userAgent);
+        
+        if (isAndroid || iOS) {
+            // O usuário está usando Android ou iOS
+            Alert.alert(
+                'Atenção',
+                'Você tem certeza que deseja excluir este item?',
+                [
+                    {
+                        text: 'Não',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    { 
+                        text: 'Sim', onPress: () => {
+                            Database.deleteItem(props.id)
+                                .then(response => props.navigation.navigate('AppList', { id: props.id }));
+                        }
+                    }  
+                ],
+                { cancelable: false },
+                );  
+        } else {
+            // O usuário não está usando iOS ou Android
+            if(window.confirm('Você tem certeza que deseja excluir este item?')){
+                Database.deleteItem(props.id)
+                    .then(response => props.navigation.navigate('AppList', { id: props.id }));
+            };
+        }
+
     }
 
     return (
         <View style={styles.container}>
           <Text style={styles.textItem}>{props.item}</Text>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress} > 
-                <Text style={styles.buttonText}>X</Text> 
+            <TouchableOpacity 
+                style={styles.deleteButton}
+                onPress={handleDeletePress}> 
+                <Icon name="trash" color="white" size={18} />
             </TouchableOpacity> 
             <TouchableOpacity 
                 style={styles.editButton} 
                 onPress={handleEditPress}> 
-                <Text style={styles.buttonText}>Editar</Text> 
-            </TouchableOpacity> 
+                <Icon name="edit" color="white" size={18} />
+            </TouchableOpacity>
           </View>
         </View>
       );
