@@ -35,9 +35,17 @@ async function getItem(id){
 }
 
 
+async function deleteItem(id){
+    let savedItems = await getItems();
+    const index = await savedItems.findIndex(item => item.id === id);
+    savedItems.splice(index, 1);
+    return AsyncStorage.setItem('items', JSON.stringify(savedItems));
+}
 
 module.exports = {
     saveItem,
     getItems,
-    getItem
+    getItem,
+    deleteItem
 }
+
