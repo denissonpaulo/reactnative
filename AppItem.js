@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Alert, Platform } from 'react-native';
 import { Feather as Icon } from '@expo/vector-icons';
 import Database from './Database';
 
@@ -14,30 +14,28 @@ export default function AppItem(props){
 
     function handleDeletePress(){ 
 
-        const userAgent = navigator.userAgent;
-        const iOS = !!userAgent.match(/iPhone|iPad|iPod/);
-        const isAndroid = /android/i.test(userAgent);
+        const SO = Platform.OS;
         
-        if (isAndroid || iOS) {
-            // O usuário está usando Android ou iOS
-            Alert.alert(
-                'Atenção',
-                'Você tem certeza que deseja excluir este item?',
-                [
-                    {
-                        text: 'Não',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                    { 
-                        text: 'Sim', onPress: () => {
-                            Database.deleteItem(props.id)
-                                .then(response => props.navigation.navigate('AppList', { id: props.id }));
-                        }
-                    }  
-                ],
-                { cancelable: false },
-                );  
+        if (SO == 'android' || SO == 'ios') {
+        // O usuário está usando Android ou iOS
+        Alert.alert(
+            'Atenção',
+            'Você tem certeza que deseja excluir este item?',
+            [
+                {
+                    text: 'Não',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { 
+                    text: 'Sim', onPress: () => {
+                        Database.deleteItem(props.id)
+                            .then(response => props.navigation.navigate('AppList', { id: props.id }));
+                    }
+                }  
+            ],
+            { cancelable: false },
+            );  
         } else {
             // O usuário não está usando iOS ou Android
             if(window.confirm('Você tem certeza que deseja excluir este item?')){
